@@ -20,7 +20,7 @@ namespace ConsoleSearch
                 var query = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
                
 
-                var result = mSearchLogic.Search(query, 10);
+                var result = mSearchLogic.Search(query, 100);
 
                 if (result.Ignored.Count > 0) {
                     Console.WriteLine($"Ignored: {string.Join(',', result.Ignored)}");
