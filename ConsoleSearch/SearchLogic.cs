@@ -4,7 +4,7 @@ using Shared.Model;
 
 namespace ConsoleSearch
 {
-    public class SearchLogic
+    public class SearchLogic : ISearchLogic
     {
         IDatabase mDatabase;
 

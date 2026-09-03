@@ -4,11 +4,10 @@ namespace ConsoleSearch
 {
     public class App
     {
-
         public void Run()
         {
             IDatabase db = GetDatabase();
-            SearchLogic mSearchLogic = new SearchLogic(db);
+            ISearchLogic mSearchLogic = SearchLogicFactory.GetSearchLogic(db);
             Console.WriteLine("Console Search");
             
             while (true)
@@ -42,9 +41,9 @@ namespace ConsoleSearch
             Console.Write("Use SQLite (1) or Postgres (2) database?");
             string input = Console.ReadLine();
             if (input.Equals("1"))
-                return new DatabaseSqlite();
-            else if (input.Equals("2"))
-                return new DatabasePostgres();
+                return DatabaseFactory.GetDataBase(DatabaseType.SQLITE);
+            if (input.Equals("2"))
+                return DatabaseFactory.GetDataBase(DatabaseType.POSTGRES);
             Console.WriteLine("Wrong input - try again...");
             return GetDatabase();
         }

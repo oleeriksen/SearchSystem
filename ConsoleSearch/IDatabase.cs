@@ -3,6 +3,10 @@ using Shared.Model;
 
 namespace ConsoleSearch
 {
+    public enum DatabaseType {
+    SQLITE, POSTGRES, OTHER };
+
+
     public interface IDatabase
     {
         /// <summary>
