@@ -1,24 +1,23 @@
-using System.Collections.Generic;
-
-
-namespace ConsoleSearch;
+﻿using Shared.Model;
+using Microsoft.Data.Sqlite;
 using Shared;
-using Shared.Model;
-using Npgsql;
 
+namespace SearchAPI.Logic;
 
-public class DatabasePostgres : IDatabase
-{
-    //private SqliteConnection _connection;
-    private NpgsqlConnection _connection;
+    public class DatabaseSqlite : IDatabase
+    {
+        private SqliteConnection _connection;
 
         private Dictionary<string, int> mWords = null;
 
-        public DatabasePostgres()
+        public DatabaseSqlite()
         {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder();
+
+            connectionStringBuilder.DataSource = Paths.SQLITE_DATABASE;
 
 
-            _connection = new NpgsqlConnection(Paths.POSTGRES_DATABASE);
+            _connection = new SqliteConnection(connectionStringBuilder.ConnectionString);
 
             _connection.Open();
 
@@ -37,9 +36,9 @@ public class DatabasePostgres : IDatabase
 
 
         // key is the id of the document, the value is number of search words in the document
-        public List<KeyValuePair<int, int>> GetDocuments(List<int> wordIds)
+        public List<(int docId, int hits)> GetDocuments(List<int> wordIds)
         {
-            var res = new List<KeyValuePair<int, int>>();
+            var res = new List<(int docId, int hits)>();
 
             /* Example sql statement looking for doc id's that
                contain words with id 2 and 3
@@ -65,7 +64,7 @@ public class DatabasePostgres : IDatabase
                     var docId = reader.GetInt32(0);
                     var count = reader.GetInt32(1);
 
-                    res.Add(new KeyValuePair<int, int>(docId, count));
+                    res.Add((docId, count));
                 }
             }
 
@@ -75,10 +74,9 @@ public class DatabasePostgres : IDatabase
         private string AsString(List<int> x) => $"({string.Join(',', x)})";
 
 
-
        
 
-        private Dictionary<string, int> GetAllWords()
+        public Dictionary<string, int> GetAllWords()
         {
             Dictionary<string, int> res = new Dictionary<string, int>();
 
@@ -97,10 +95,9 @@ public class DatabasePostgres : IDatabase
             }
             return res;
         }
-
+        
         public BEDocument GetDocDetails(int docId)
         {
-
             var selectCmd = _connection.CreateCommand();
             selectCmd.CommandText = $"SELECT * FROM document where id = {docId}";
 
@@ -110,10 +107,10 @@ public class DatabasePostgres : IDatabase
                 {
                     var id = reader.GetInt32(0);
                     var url = reader.GetString(1);
-                    var idxTime = reader.GetString(2);
-                    var creationTime = reader.GetString(3);
+                    var idxTime = reader.GetDateTime(2);
+                    var creationTime = reader.GetDateTime(3);
 
-                    return new BEDocument { mId = id, mUrl = url, mIdxTime = idxTime, mCreationTime = creationTime };
+                    return new BEDocument { Id = id, Url = url, IdxTime = idxTime, CreationTime = creationTime };
                 }
             }
             return null;
@@ -121,7 +118,7 @@ public class DatabasePostgres : IDatabase
 
         /* Return a list of id's for words; all them among wordIds, but not present in the document
          */
-        public List<int> getMissing(int docId, List<int> wordIds)
+        public List<string> GetMissing(int docId, List<int> wordIds)
         {
             var sql = "SELECT wordId FROM Occ where ";
             sql += "wordId in " + AsString(wordIds) + " AND docId = " + docId;
@@ -145,21 +142,42 @@ public class DatabasePostgres : IDatabase
                 result.Remove(w);
 
 
-            return result;
+            return WordsFromIds(result);
         }
 
-        public List<string> WordsFromIds(List<int> wordIds)
+        public List<string> GetHits(int docId, List<int> wordIds)
         {
-            List<string> result = new List<string>();
+            var sql = "SELECT wordId FROM Occ where ";
+            sql += "wordId in " + AsString(wordIds) + " AND docId = " + docId;
+            sql += " ORDER BY wordId;";
 
-            if (wordIds.Count == 0)
-                return result;
+            var selectCmd = _connection.CreateCommand();
+            selectCmd.CommandText = sql;
+
+            List<int> present = new List<int>();
+
+            using (var reader = selectCmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var wordId = reader.GetInt32(0);
+                    present.Add(wordId);
+                }
+            }
+            
+            return WordsFromIds(present);
+        }
+        
+        private List<string> WordsFromIds(List<int> wordIds)
+        {
             var sql = "SELECT name FROM Word where ";
             sql += "id in " + AsString(wordIds);
 
             var selectCmd = _connection.CreateCommand();
             selectCmd.CommandText = sql;
-            
+
+            List<string> result = new List<string>();
+
             using (var reader = selectCmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -170,22 +188,6 @@ public class DatabasePostgres : IDatabase
             }
             return result;
         }
+        
+    }
 
-        public List<int> GetWordIds(string[] query, out List<string> outIgnored)
-        {
-            if (mWords == null)
-                mWords = GetAllWords();
-            var res = new List<int>();
-            var ignored = new List<string>();
-
-            foreach (var aWord in query)
-            {
-                if (mWords.ContainsKey(aWord))
-                    res.Add(mWords[aWord]);
-                else
-                    ignored.Add(aWord);
-            }
-            outIgnored = ignored;
-            return res;
-        }
-}
