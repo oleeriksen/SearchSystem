@@ -29,7 +29,7 @@ namespace SearchAPI.Logic;
 
             if (wordIds.Count == 0) // no words present in index
                  return new SearchResult { Query = query, 
-                                           NoOfHits = 0,
+                                           Hits = 0,
                                            DocumentHits = new List<DocumentHit>(), 
                                            Ignored = ignored, 
                                            TimeUsed = DateTime.Now - start};
@@ -57,7 +57,7 @@ namespace SearchAPI.Logic;
             }
 
             return new SearchResult{ Query = query, 
-                                     NoOfHits = docIds.Count,
+                                     Hits = docIds.Count,
                                      DocumentHits = docresult, 
                                      Ignored = ignored, 
                                      TimeUsed = DateTime.Now - start,

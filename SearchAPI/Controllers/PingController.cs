@@ -10,7 +10,7 @@ public class PingController : ControllerBase
     public string? Ping()
     {
         string? id = Environment.GetEnvironmentVariable("id");
-        return $"Search API - ver 1.0 - instance {id}";
+        return $"Search API - instance {id}";
     }
     
 }

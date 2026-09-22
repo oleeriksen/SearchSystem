@@ -21,7 +21,7 @@ namespace Shared.Model;
         /// <summary>
         /// The total number of documents containing at least one word from the query
         /// </summary>
-        public int NoOfHits { get; set; }
+        public int Hits { get; set; }
         
         /// <summary>
         /// The most important details about the documents hit by the query

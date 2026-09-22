@@ -8,7 +8,7 @@ namespace Shared;
 
 internal class SearchLogicProxy : ISearchLogic
 {
-    private string serverEndPoint = "http://localhost:5203/api";
+    private string serverEndPoint = "http://localhost:5044/api";
 
     private HttpClient mHttp;
 

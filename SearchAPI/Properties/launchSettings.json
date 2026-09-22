@@ -4,24 +4,27 @@
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
+      "launchUrl": "ping",
       "applicationUrl": "http://localhost:5158",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "id": "A",
-        "database": "sqlite"
+        "databasetype": "sqlite",
+        "database": "/Users/oler/Documents/Data/searchDBm1.db"
       }
     },
     "http2": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
+      "launchBrowser": true,
+      "launchUrl": "ping",
       "applicationUrl": "http://localhost:5159",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "id": "B",
-        "database": "sqlite"
-
+        "databasetype": "sqlite",
+        "database": "/Users/oler/Documents/Data/searchDBm2.db"
       }
     },
     "https": {

@@ -9,7 +9,7 @@ namespace SearchAPI.Controllers;
 [Route("api/search")]
 public class SearchController : ControllerBase
 {
-    private static IDatabase mDatabase = DatabaseFactory.GetDatabase(Environment.GetEnvironmentVariable("database"));
+    private static IDatabase mDatabase = DatabaseFactory.GetDatabase(Environment.GetEnvironmentVariable("databasetype"));
     
     [HttpGet]
     [Route("{query}/{maxAmount}")]

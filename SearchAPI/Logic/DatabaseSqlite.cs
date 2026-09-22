@@ -14,7 +14,7 @@ namespace SearchAPI.Logic;
         {
             var connectionStringBuilder = new SqliteConnectionStringBuilder();
 
-            connectionStringBuilder.DataSource = Paths.SQLITE_DATABASE;
+            connectionStringBuilder.DataSource = Environment.GetEnvironmentVariable("database");
 
 
             _connection = new SqliteConnection(connectionStringBuilder.ConnectionString);

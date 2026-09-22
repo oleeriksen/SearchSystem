@@ -33,7 +33,7 @@ namespace ConsoleSearch;
                     Console.WriteLine($"Missing: {ArrayAsString(doc.Missing.ToArray())}");
                     idx++;
                 }
-                Console.WriteLine($"Documents: {result.NoOfHits}. Time: {result.TimeUsed.TotalMilliseconds}");
+                Console.WriteLine($"Documents: {result.Hits}. Time: {result.TimeUsed.TotalMilliseconds}");
             }
         }
         
